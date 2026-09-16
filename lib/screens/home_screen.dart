@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../models/activity_item.dart';
+import '../providers/profile_provider.dart';
 import '../widgets/activity_card.dart';
 import '../widgets/section_title.dart';
 
@@ -27,11 +29,11 @@ class HomeScreen extends StatelessWidget {
       route: '/activity2',
     ),
     ActivityItem(
-      title: 'Settings',
+      title: 'Network Monitor',
       subtitle: '',
-      icon: Icons.dark_mode_outlined,
-      color: Colors.deepPurple,
-      route: '/settings',
+      icon: Icons.network_check,
+      color: Colors.blue,
+      route: '/network',
     ),
   ];
 
@@ -40,6 +42,32 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Flutter Portfolio'),
+        actions: [
+          Tooltip(
+            message: 'Edit profile',
+            child: Consumer<ProfileProvider>(
+              builder: (context, profile, child) {
+                final theme = Theme.of(context);
+                return Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: GestureDetector(
+                    onTap: () => Navigator.pushNamed(context, '/profile'),
+                    child: CircleAvatar(
+                      backgroundColor: theme.colorScheme.primaryContainer,
+                      child: Text(
+                        profile.initial,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: theme.colorScheme.onPrimaryContainer,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
@@ -52,8 +80,6 @@ class HomeScreen extends StatelessWidget {
           _buildActivityCard(context, _activities[0]),
           const SizedBox(height: 12),
           _buildActivityCard(context, _activities[1]),
-          const SizedBox(height: 24),
-          const SectionTitle(title: 'Settings'),
           const SizedBox(height: 12),
           _buildActivityCard(context, _activities[2]),
         ],
@@ -111,12 +137,21 @@ class _WelcomeHeader extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Text(
-              'Welcome! ',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                height: 1.5,
-              ),
+            Consumer<ProfileProvider>(
+              builder: (context, profile, child) {
+                final greeting = profile.name.isEmpty
+                    ? 'Welcome, BS Computer Science student!'
+                    : 'Hi ${profile.name}!';
+                return Text(
+                  '$greeting Explore each activity to see navigation, '
+                  'state management, responsive layouts, and theming '
+                  'in action.',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    height: 1.5,
+                  ),
+                );
+              },
             ),
           ],
         ),

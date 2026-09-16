@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'providers/network_monitor_provider.dart';
+import 'providers/profile_provider.dart';
 import 'providers/theme_provider.dart';
 import 'screens/activity1_screen.dart';
 import 'screens/activity2_screen.dart';
 import 'screens/home_screen.dart';
-import 'screens/settings_screen.dart';
+import 'screens/network_monitor_screen.dart';
+import 'screens/profile_screen.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (context) => ProfileProvider()),
+        ChangeNotifierProvider(
+          create: (context) => NetworkMonitorProvider()..startMonitoring(),
+        ),
+      ],
       child: const MyApp(),
     ),
   );
@@ -35,7 +44,8 @@ class MyApp extends StatelessWidget {
             '/': (context) => const HomeScreen(),
             '/activity1': (context) => const Activity1Screen(),
             '/activity2': (context) => const Activity2Screen(),
-            '/settings': (context) => const SettingsScreen(),
+            '/profile': (context) => const ProfileScreen(),
+            '/network': (context) => const NetworkMonitorScreen(),
           },
         );
       },
