@@ -3,10 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_portfolio/main.dart';
+import 'package:flutter_portfolio/providers/network_diagnostics_provider.dart';
 import 'package:flutter_portfolio/providers/network_monitor_provider.dart';
 import 'package:flutter_portfolio/providers/profile_provider.dart';
 import 'package:flutter_portfolio/providers/theme_provider.dart';
 import 'package:flutter_portfolio/screens/profile_screen.dart';
+import 'package:flutter_portfolio/widgets/activity_card.dart';
 
 Widget buildApp() {
   return MultiProvider(
@@ -15,6 +17,9 @@ Widget buildApp() {
       ChangeNotifierProvider(create: (context) => ProfileProvider()),
       ChangeNotifierProvider(
         create: (context) => NetworkMonitorProvider()..startMonitoring(),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => NetworkDiagnosticsProvider(),
       ),
     ],
     child: const MyApp(),
@@ -26,37 +31,8 @@ void main() {
     await tester.pumpWidget(buildApp());
 
     expect(find.text('My Flutter Portfolio'), findsOneWidget);
-    expect(find.text('Activity 1'), findsOneWidget);
-    expect(find.text('Activity 2'), findsOneWidget);
-    expect(find.text('Network Monitor'), findsOneWidget);
+    expect(find.text('Activities'), findsWidgets);
     expect(find.byType(CircleAvatar), findsOneWidget);
-  });
-
-  testWidgets('Activity 1 counter increments, decrements, and resets',
-      (tester) async {
-    await tester.pumpWidget(buildApp());
-
-    await tester.tap(find.byIcon(Icons.exposure_plus_1));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Counter Activity'), findsOneWidget);
-    expect(find.text('0'), findsOneWidget);
-
-    await tester.tap(find.text('Increase'));
-    await tester.pump();
-    expect(find.text('1'), findsOneWidget);
-
-    await tester.tap(find.text('Increase'));
-    await tester.pump();
-    expect(find.text('2'), findsOneWidget);
-
-    await tester.tap(find.text('Decrease'));
-    await tester.pump();
-    expect(find.text('1'), findsOneWidget);
-
-    await tester.tap(find.text('Reset'));
-    await tester.pump();
-    expect(find.text('0'), findsOneWidget);
   });
 
   testWidgets('Profile screen dark mode switch updates the global theme',
@@ -105,13 +81,23 @@ void main() {
     );
   });
 
-  testWidgets('Network Monitor queues requests while offline',
+  testWidgets('Network Monitor is reachable from the Activities list',
       (tester) async {
     await tester.pumpWidget(buildApp());
 
-    await tester.ensureVisible(find.text('Network Monitor'));
+    // Home -> Activities list.
+    await tester.ensureVisible(find.byType(ActivityCard));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Network Monitor'));
+    await tester.tap(find.byType(ActivityCard));
+    await tester.pumpAndSettle();
+
+    // The Activities list shows the Activity 2 label + Network Monitoring.
+    expect(find.text('Activity 2'), findsOneWidget);
+    expect(find.text('Activity 3'), findsOneWidget);
+    expect(find.text('Network Monitoring'), findsOneWidget);
+
+    // Activities list -> Network Monitor screen.
+    await tester.tap(find.text('Network Monitoring'));
     await tester.pumpAndSettle();
 
     // No connectivity plugin in tests, so the state starts offline.
@@ -127,5 +113,29 @@ void main() {
     expect(find.text('Data request 2'), findsOneWidget);
     expect(find.text('Waiting for a connection... the queue auto-retries '
         'when Wi-Fi or Cellular returns.'), findsOneWidget);
+  });
+
+  testWidgets('Network Diagnostic Dashboard opens from the Activities list',
+      (tester) async {
+    await tester.pumpWidget(buildApp());
+
+    // Home -> Activities list.
+    await tester.ensureVisible(find.byType(ActivityCard));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(ActivityCard));
+    await tester.pumpAndSettle();
+
+    // Activities list -> Network Diagnostic Dashboard.
+    await tester.ensureVisible(find.text('Network Diagnostic Dashboard'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Network Diagnostic Dashboard'));
+    await tester.pumpAndSettle();
+
+    // Dashboard renders with the tier state broadcast from the global
+    // provider (no diagnostics started in tests -> awaiting state).
+    expect(
+        find.text('Network Diagnostic Dashboard'), findsOneWidget);
+    expect(find.text('Checking…'), findsOneWidget);
+    expect(find.text('Awaiting first test…'), findsOneWidget);
   });
 }

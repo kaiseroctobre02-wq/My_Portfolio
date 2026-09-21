@@ -15,25 +15,11 @@ class HomeScreen extends StatelessWidget {
 
   static const List<ActivityItem> _activities = [
     ActivityItem(
-      title: 'Activity 1',
-      subtitle: '',
-      icon: Icons.exposure_plus_1,
-      color: Colors.indigo,
-      route: '/activity1',
-    ),
-    ActivityItem(
-      title: 'Activity 2',
+      title: 'Activities',
       subtitle: '',
       icon: Icons.dashboard_customize_outlined,
       color: Colors.teal,
       route: '/activity2',
-    ),
-    ActivityItem(
-      title: 'Network Monitor',
-      subtitle: '',
-      icon: Icons.network_check,
-      color: Colors.blue,
-      route: '/network',
     ),
   ];
 
@@ -78,10 +64,6 @@ class HomeScreen extends StatelessWidget {
           const SectionTitle(title: 'Activities'),
           const SizedBox(height: 12),
           _buildActivityCard(context, _activities[0]),
-          const SizedBox(height: 12),
-          _buildActivityCard(context, _activities[1]),
-          const SizedBox(height: 12),
-          _buildActivityCard(context, _activities[2]),
         ],
       ),
     );

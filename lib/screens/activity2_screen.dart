@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// Activity 2: .
+/// Activities screen.
 ///
 /// Uses LayoutBuilder to measure the available width and decide how
-/// many columns the grid should show:
+/// the layout adapts:
 ///   - Phone  ( < 600 px )  -> 1 column
 ///   - Tablet (600 - 899 )  -> 2 columns
 ///   - Desktop (>= 900 )    -> 3 columns
@@ -12,50 +12,11 @@ import 'package:flutter/material.dart';
 class Activity2Screen extends StatelessWidget {
   const Activity2Screen({super.key});
 
-  static const List<_ResponsiveCard> _cards = [
-    _ResponsiveCard(
-      title: 'Profile',
-      description: 'Your student profile with name, course, and year level.',
-      icon: Icons.person_outline,
-      color: Colors.indigo,
-    ),
-    _ResponsiveCard(
-      title: 'Grades',
-      description: 'A summary of your grades across all subjects this semester.',
-      icon: Icons.grade_outlined,
-      color: Colors.teal,
-    ),
-    _ResponsiveCard(
-      title: 'Schedule',
-      description: 'Your weekly class schedule with room assignments.',
-      icon: Icons.schedule_outlined,
-      color: Colors.orange,
-    ),
-    _ResponsiveCard(
-      title: 'Assignments',
-      description: 'Pending tasks and deadlines for each of your subjects.',
-      icon: Icons.assignment_outlined,
-      color: Colors.pink,
-    ),
-    _ResponsiveCard(
-      title: 'Projects',
-      description: 'A list of your course projects and practical activities.',
-      icon: Icons.code,
-      color: Colors.blueGrey,
-    ),
-    _ResponsiveCard(
-      title: 'Certificates',
-      description: 'Completed trainings and certificates you have earned.',
-      icon: Icons.verified_outlined,
-      color: Colors.deepPurple,
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Activity 2 '),
+        title: const Text('Activities'),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -76,18 +37,7 @@ class Activity2Screen extends StatelessWidget {
                   columns: crossAxisCount,
                 ),
                 const SizedBox(height: 16),
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: crossAxisCount,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    mainAxisExtent: 170,
-                  ),
-                  itemCount: _cards.length,
-                  itemBuilder: (context, index) => _cards[index],
-                ),
+                const _EmptyStateCard(),
               ],
             ),
           );
@@ -119,22 +69,21 @@ class _ResponsiveHeader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '',
+              'Current Layout',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 6),
             Text(
-              ' $layoutName · $columns $columnLabel',
+              '$layoutName · $columns $columnLabel',
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 10),
             Text(
-              ''
-              '',
+              'This screen adapts to the available width using LayoutBuilder.',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
                 height: 1.4,
@@ -147,22 +96,9 @@ class _ResponsiveHeader extends StatelessWidget {
   }
 }
 
-/// A single card inside the responsive grid.
-///
-/// Uses Row and Column for its layout and Expanded to let the
-/// description fill the remaining space without overflowing.
-class _ResponsiveCard extends StatelessWidget {
-  final String title;
-  final String description;
-  final IconData icon;
-  final Color color;
-
-  const _ResponsiveCard({
-    required this.title,
-    required this.description,
-    required this.icon,
-    required this.color,
-  });
+/// Shown when there are no activities yet.
+class _EmptyStateCard extends StatelessWidget {
+  const _EmptyStateCard();
 
   @override
   Widget build(BuildContext context) {
@@ -170,44 +106,27 @@ class _ResponsiveCard extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(icon, color: color, size: 22),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
+            Icon(
+              Icons.dashboard_customize_outlined,
+              size: 48,
+              color: theme.colorScheme.primary,
             ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: Text(
-                description,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  height: 1.4,
-                ),
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis,
+            const SizedBox(height: 12),
+            Text(
+              'No activities yet',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Future laboratory activities will appear here.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
           ],
