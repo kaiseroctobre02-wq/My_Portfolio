@@ -5,8 +5,8 @@ import '../widgets/activity_card.dart';
 /// Activities screen: a list of the activities inside this portfolio.
 ///
 /// Each entry is a card that opens its own activity screen.
-class Activity2Screen extends StatelessWidget {
-  const Activity2Screen({super.key});
+class ActivitiesScreen extends StatelessWidget {
+  const ActivitiesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

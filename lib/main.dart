@@ -5,8 +5,7 @@ import 'providers/network_diagnostics_provider.dart';
 import 'providers/network_monitor_provider.dart';
 import 'providers/profile_provider.dart';
 import 'providers/theme_provider.dart';
-import 'screens/activity1_screen.dart';
-import 'screens/activity2_screen.dart';
+import 'screens/activities_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/network_diagnostics_screen.dart';
 import 'screens/network_monitor_screen.dart';
@@ -47,8 +46,7 @@ class MyApp extends StatelessWidget {
           initialRoute: '/',
           routes: {
             '/': (context) => const HomeScreen(),
-            '/activity1': (context) => const Activity1Screen(),
-            '/activity2': (context) => const Activity2Screen(),
+            '/activity2': (context) => const ActivitiesScreen(),
             '/profile': (context) => const ProfileScreen(),
             '/network': (context) => const NetworkMonitorScreen(),
             '/diagnostics': (context) => const NetworkDiagnosticsScreen(),
