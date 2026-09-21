@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -80,7 +79,11 @@ class NetworkDiagnosticsProvider extends ChangeNotifier {
   static const List<String> _uploadUrls = [
     'https://speed.cloudflare.com/__up',
   ];
-  static const List<String> _pingHosts = ['1.1.1.1', '8.8.8.8'];
+  static const List<String> _pingUrls = [
+    'https://connectivitycheck.gstatic.com/generate_204',
+    'https://cp.cloudflare.com/generate_204',
+    'https://www.gstatic.com/generate_204',
+  ];
 
   ConnectionTier _tier = ConnectionTier.degraded;
   bool _isRunning = false;
@@ -317,18 +320,17 @@ class NetworkDiagnosticsProvider extends ChangeNotifier {
     return samples.reduce((a, b) => a + b) / samples.length;
   }
 
-  /// Single round-trip latency to a known host. Returns null when the
-  /// packet is lost or the host is unreachable.
+  /// Single round-trip latency to a well-known endpoint. Returns null
+  /// when the request fails or times out (treated as a lost packet).
   Future<double?> _pingOnce({Duration timeout = const Duration(seconds: 4)}) async {
-    for (final host in _pingHosts) {
+    for (final url in _pingUrls) {
       try {
         final stopwatch = Stopwatch()..start();
-        final socket = await Socket.connect(host, 443, timeout: timeout);
-        await socket.close();
+        await http.get(Uri.parse(url)).timeout(timeout);
         stopwatch.stop();
         return stopwatch.elapsedMilliseconds.toDouble();
       } catch (_) {
-        // Host unreachable, try the next one.
+        // Endpoint unreachable or blocked, try the next one.
       }
     }
     return null;
