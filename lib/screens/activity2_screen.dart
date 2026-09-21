@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// Activities screen.
+import '../widgets/activity_card.dart';
+
+/// Activities screen: a list of the activities inside this portfolio.
 ///
-/// Uses LayoutBuilder to measure the available width and decide how
-/// the layout adapts:
-///   - Phone  ( < 600 px )  -> 1 column
-///   - Tablet (600 - 899 )  -> 2 columns
-///   - Desktop (>= 900 )    -> 3 columns
-///
-/// No hard-coded sizes, so there are no RenderFlex overflow errors.
+/// Each entry is a card that opens its own activity screen.
 class Activity2Screen extends StatelessWidget {
   const Activity2Screen({super.key});
 
@@ -18,118 +14,59 @@ class Activity2Screen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Activities'),
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final double width = constraints.maxWidth;
-          final bool isTablet = width >= 600;
-          final bool isDesktop = width >= 900;
-          final int crossAxisCount = isDesktop ? 3 : (isTablet ? 2 : 1);
-          final String layoutName =
-              isDesktop ? 'Desktop' : (isTablet ? 'Tablet' : 'Phone');
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _ResponsiveHeader(
-                  layoutName: layoutName,
-                  columns: crossAxisCount,
-                ),
-                const SizedBox(height: 16),
-                const _EmptyStateCard(),
-              ],
-            ),
-          );
-        },
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          const _ActivityLabel(title: 'Activity 2'),
+          const SizedBox(height: 12),
+          ActivityCard(
+            title: 'Network Monitoring',
+            subtitle: '',
+            icon: Icons.network_check,
+            color: Colors.blue,
+            onTap: () => Navigator.pushNamed(context, '/network'),
+          ),
+          const SizedBox(height: 24),
+          const _ActivityLabel(title: 'Activity 3'),
+          const SizedBox(height: 12),
+          ActivityCard(
+            title: 'Network Diagnostic Dashboard',
+            subtitle: '',
+            icon: Icons.speed,
+            color: Colors.green,
+            onTap: () => Navigator.pushNamed(context, '/diagnostics'),
+          ),
+        ],
       ),
     );
   }
 }
 
-/// Header that tells the user which layout the screen is now showing.
-class _ResponsiveHeader extends StatelessWidget {
-  final String layoutName;
-  final int columns;
+/// Small label that identifies an activity inside this screen.
+class _ActivityLabel extends StatelessWidget {
+  final String title;
 
-  const _ResponsiveHeader({
-    required this.layoutName,
-    required this.columns,
-  });
+  const _ActivityLabel({required this.title});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final columnLabel = columns == 1 ? 'column' : 'columns';
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Current Layout',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              '$layoutName · $columns $columnLabel',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'This screen adapts to the available width using LayoutBuilder.',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                height: 1.4,
-              ),
-            ),
-          ],
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(999),
         ),
-      ),
-    );
-  }
-}
-
-/// Shown when there are no activities yet.
-class _EmptyStateCard extends StatelessWidget {
-  const _EmptyStateCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 24),
-        child: Column(
-          children: [
-            Icon(
-              Icons.dashboard_customize_outlined,
-              size: 48,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'No activities yet',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Future laboratory activities will appear here.',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
+        child: Text(
+          title,
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: theme.colorScheme.onPrimaryContainer,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.5,
+          ),
         ),
       ),
     );
